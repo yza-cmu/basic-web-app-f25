@@ -8,6 +8,68 @@ function isPrime(num: number): boolean {
   return true;
 }
 
+function evaluateExpression(expression: string): number {
+  // Replace operation words with symbols
+  let expr = expression
+    .replace(/multiplied by/gi, '*')
+    .replace(/divided by/gi, '/')
+    .replace(/plus/gi, '+')
+    .replace(/minus/gi, '-')
+    .replace(/to the power of/gi, '**');
+
+  // Extract numbers and operators
+  const tokens = expr.match(/(\d+|\*\*|\*|\/|\+|\-)/g);
+  if (!tokens) return NaN;
+
+  const numbers: number[] = [];
+  const operators: string[] = [];
+
+  for (const token of tokens) {
+    if (/\d+/.test(token)) {
+      numbers.push(parseInt(token));
+    } else {
+      operators.push(token);
+    }
+  }
+
+  // Handle power first
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === '**') {
+      numbers[i] = Math.pow(numbers[i], numbers[i + 1]);
+      numbers.splice(i + 1, 1);
+      operators.splice(i, 1);
+      i--;
+    }
+  }
+
+  // Handle multiplication and division
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === '*') {
+      numbers[i] = numbers[i] * numbers[i + 1];
+      numbers.splice(i + 1, 1);
+      operators.splice(i, 1);
+      i--;
+    } else if (operators[i] === '/') {
+      numbers[i] = numbers[i] / numbers[i + 1];
+      numbers.splice(i + 1, 1);
+      operators.splice(i, 1);
+      i--;
+    }
+  }
+
+  // Handle addition and subtraction
+  let result = numbers[0];
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === '+') {
+      result += numbers[i + 1];
+    } else if (operators[i] === '-') {
+      result -= numbers[i + 1];
+    }
+  }
+
+  return result;
+}
+
 export default function QueryProcessor(query: string): string {
   if (query.toLowerCase().includes("shakespeare")) {
     return (
@@ -27,6 +89,15 @@ export default function QueryProcessor(query: string): string {
 
   if (query.toLowerCase().includes("andrew id")) {
       return "yza"; // Replace with your actual Andrew ID
+  }
+
+  // Handle mixed operations (e.g., "78 multiplied by 26 plus 55")
+  const mixedOpMatch = query.match(/what is ([\d\s]+(?:(?:multiplied by|divided by|plus|minus|to the power of)\s+[\d\s]+)+)/i);
+  if (mixedOpMatch) {
+    const result = evaluateExpression(mixedOpMatch[1]);
+    if (!isNaN(result)) {
+      return result.toString();
+    }
   }
 
   // Handle multiple additions (e.g., "64 plus 34 plus 12")
