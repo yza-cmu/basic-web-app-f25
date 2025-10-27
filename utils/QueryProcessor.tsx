@@ -29,7 +29,15 @@ export default function QueryProcessor(query: string): string {
       return "yza"; // Replace with your actual Andrew ID
   }
 
-  // Handle addition queries
+  // Handle multiple additions (e.g., "64 plus 34 plus 12")
+  const multiAdditionMatch = query.match(/what is ([\d\s]+(?:plus\s+[\d\s]+)+)/i);
+  if (multiAdditionMatch) {
+    const nums = multiAdditionMatch[1].split('plus').map(n => parseInt(n.trim()));
+    const sum = nums.reduce((acc, val) => acc + val, 0);
+    return sum.toString();
+  }
+
+  // Handle addition queries (two numbers)
   const additionMatch = query.match(/what is (\d+) plus (\d+)/i);
   if (additionMatch) {
     const num1 = parseInt(additionMatch[1]);
@@ -37,7 +45,15 @@ export default function QueryProcessor(query: string): string {
     return (num1 + num2).toString();
   }
 
-  // Handle subtraction queries
+  // Handle multiple subtractions
+  const multiSubtractionMatch = query.match(/what is ([\d\s]+(?:minus\s+[\d\s]+)+)/i);
+  if (multiSubtractionMatch) {
+    const parts = multiSubtractionMatch[1].split('minus').map(n => parseInt(n.trim()));
+    const result = parts.reduce((acc, val, idx) => idx === 0 ? val : acc - val, 0);
+    return result.toString();
+  }
+
+  // Handle subtraction queries (two numbers)
   const subtractionMatch = query.match(/what is (\d+) minus (\d+)/i);
   if (subtractionMatch) {
     const num1 = parseInt(subtractionMatch[1]);
@@ -45,7 +61,15 @@ export default function QueryProcessor(query: string): string {
     return (num1 - num2).toString();
   }
 
-  // Handle multiplication queries
+  // Handle multiple multiplications
+  const multiMultiplicationMatch = query.match(/what is ([\d\s]+(?:multiplied by\s+[\d\s]+)+)/i);
+  if (multiMultiplicationMatch) {
+    const parts = multiMultiplicationMatch[1].split('multiplied by').map(n => parseInt(n.trim()));
+    const result = parts.reduce((acc, val) => acc * val, 1);
+    return result.toString();
+  }
+
+  // Handle multiplication queries (two numbers)
   const multiplicationMatch = query.match(/what is (\d+) multiplied by (\d+)/i);
   if (multiplicationMatch) {
     const num1 = parseInt(multiplicationMatch[1]);
