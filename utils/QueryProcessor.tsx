@@ -37,6 +37,14 @@ export default function QueryProcessor(query: string): string {
     return (num1 + num2).toString();
   }
 
+  // Handle subtraction queries
+  const subtractionMatch = query.match(/what is (\d+) minus (\d+)/i);
+  if (subtractionMatch) {
+    const num1 = parseInt(subtractionMatch[1]);
+    const num2 = parseInt(subtractionMatch[2]);
+    return (num1 - num2).toString();
+  }
+
   // Handle multiplication queries
   const multiplicationMatch = query.match(/what is (\d+) multiplied by (\d+)/i);
   if (multiplicationMatch) {
