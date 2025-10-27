@@ -1,3 +1,13 @@
+function isPrime(num: number): boolean {
+  if (num <= 1) return false;
+  if (num <= 3) return true;
+  if (num % 2 === 0 || num % 3 === 0) return false;
+  for (let i = 5; i * i <= num; i += 6) {
+    if (num % i === 0 || num % (i + 2) === 0) return false;
+  }
+  return true;
+}
+
 export default function QueryProcessor(query: string): string {
   if (query.toLowerCase().includes("shakespeare")) {
     return (
@@ -8,7 +18,7 @@ export default function QueryProcessor(query: string): string {
   }
 
   if (query.toLowerCase().includes("name")) {
-    return "Yousef";
+    return "Yousef!";
   }
 
   if (query.toLowerCase().includes("age")) {
@@ -54,6 +64,14 @@ export default function QueryProcessor(query: string): string {
       }
     }
     return "";
+  }
+
+  // Handle "which numbers are primes" queries
+  const primesMatch = query.match(/which of the following numbers are primes: ([\d,\s]+)/i);
+  if (primesMatch) {
+    const numbers = primesMatch[1].split(',').map(n => parseInt(n.trim()));
+    const primes = numbers.filter(num => isPrime(num));
+    return primes.join(', ');
   }
 
   return "";
