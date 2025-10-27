@@ -227,5 +227,20 @@ export default function QueryProcessor(query: string): string {
     return odds.join(', ');
   }
 
+  // Handle anagram queries
+  const anagramMatch = query.match(/which of the following is an anagram of (\w+): (.+)\?/i);
+  if (anagramMatch) {
+    const target = anagramMatch[1].toLowerCase();
+    const candidates = anagramMatch[2].split(',').map(w => w.trim().toLowerCase());
+    const targetSorted = target.split('').sort().join('');
+
+    const anagrams = candidates.filter(word => {
+      const wordSorted = word.split('').sort().join('');
+      return wordSorted === targetSorted;
+    });
+
+    return anagrams.join(', ');
+  }
+
   return "";
 }
