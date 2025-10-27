@@ -91,8 +91,25 @@ export default function QueryProcessor(query: string): string {
       return "yza"; // Replace with your actual Andrew ID
   }
 
+  // Handle power queries FIRST (before mixed operations)
+  const powerMatch = query.match(/what is (\d+) to the power of (\d+)/i);
+  if (powerMatch) {
+    const base = parseInt(powerMatch[1]);
+    const exponent = parseInt(powerMatch[2]);
+    const result = Math.pow(base, exponent);
+    // Handle very large numbers
+    if (result === Infinity) {
+      return "Infinity";
+    }
+    // Return in scientific notation if too large
+    if (result > Number.MAX_SAFE_INTEGER) {
+      return result.toExponential();
+    }
+    return result.toString();
+  }
+
   // Handle mixed operations (e.g., "78 multiplied by 26 plus 55")
-  const mixedOpMatch = query.match(/what is ([\d\s]+(?:(?:multiplied by|divided by|plus|minus|to the power of)\s+[\d\s]+)+)/i);
+  const mixedOpMatch = query.match(/what is ([\d\s]+(?:(?:multiplied by|divided by|plus|minus)\s+[\d\s]+)+)/i);
   if (mixedOpMatch) {
     const result = evaluateExpression(mixedOpMatch[1]);
     if (!isNaN(result)) {
@@ -154,14 +171,6 @@ export default function QueryProcessor(query: string): string {
     const num1 = parseInt(divisionMatch[1]);
     const num2 = parseInt(divisionMatch[2]);
     return (num1 / num2).toString();
-  }
-
-  // Handle power queries
-  const powerMatch = query.match(/what is (\d+) to the power of (\d+)/i);
-  if (powerMatch) {
-    const base = parseInt(powerMatch[1]);
-    const exponent = parseInt(powerMatch[2]);
-    return Math.pow(base, exponent).toString();
   }
 
   // Handle "largest number" queries
