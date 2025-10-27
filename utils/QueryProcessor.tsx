@@ -78,16 +78,15 @@ export default function QueryProcessor(query: string): string {
   }
 
   // Handle "square and cube" queries
-  const squareCubeMatch = query.match(/which of the following numbers is both a square and a cube: ([\d,\s]+)/i);
+  const squareCubeMatch = query.match(/which of the following numbers (?:is|are) both a square and a cube: ([\d,\s]+)/i);
   if (squareCubeMatch) {
     const numbers = squareCubeMatch[1].split(',').map(n => parseInt(n.trim()));
-    for (const num of numbers) {
+    const squareAndCubes = numbers.filter(num => {
+      // A number is both a square and a cube if it's a perfect 6th power
       const sixthRoot = Math.pow(num, 1/6);
-      if (Math.abs(sixthRoot - Math.round(sixthRoot)) < 0.0001) {
-        return num.toString();
-      }
-    }
-    return "";
+      return Math.abs(sixthRoot - Math.round(sixthRoot)) < 0.000001;
+    });
+    return squareAndCubes.join(', ');
   }
 
   // Handle "which numbers are primes" queries
