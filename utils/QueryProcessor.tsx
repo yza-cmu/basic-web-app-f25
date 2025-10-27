@@ -53,6 +53,22 @@ export default function QueryProcessor(query: string): string {
     return (num1 * num2).toString();
   }
 
+  // Handle division queries
+  const divisionMatch = query.match(/what is (\d+) divided by (\d+)/i);
+  if (divisionMatch) {
+    const num1 = parseInt(divisionMatch[1]);
+    const num2 = parseInt(divisionMatch[2]);
+    return (num1 / num2).toString();
+  }
+
+  // Handle power queries
+  const powerMatch = query.match(/what is (\d+) to the power of (\d+)/i);
+  if (powerMatch) {
+    const base = parseInt(powerMatch[1]);
+    const exponent = parseInt(powerMatch[2]);
+    return Math.pow(base, exponent).toString();
+  }
+
   // Handle "largest number" queries
   const largestMatch = query.match(/which of the following numbers is the largest: ([\d,\s]+)/i);
   if (largestMatch) {
@@ -80,6 +96,41 @@ export default function QueryProcessor(query: string): string {
     const numbers = primesMatch[1].split(',').map(n => parseInt(n.trim()));
     const primes = numbers.filter(num => isPrime(num));
     return primes.join(', ');
+  }
+
+  // Handle "smallest number" queries
+  const smallestMatch = query.match(/which of the following numbers is the smallest: ([\d,\s]+)/i);
+  if (smallestMatch) {
+    const numbers = smallestMatch[1].split(',').map(n => parseInt(n.trim()));
+    const smallest = Math.min(...numbers);
+    return smallest.toString();
+  }
+
+  // Handle "perfect squares" queries
+  const perfectSquaresMatch = query.match(/which of the following numbers are perfect squares: ([\d,\s]+)/i);
+  if (perfectSquaresMatch) {
+    const numbers = perfectSquaresMatch[1].split(',').map(n => parseInt(n.trim()));
+    const perfectSquares = numbers.filter(num => {
+      const sqrt = Math.sqrt(num);
+      return sqrt === Math.floor(sqrt);
+    });
+    return perfectSquares.join(', ');
+  }
+
+  // Handle "even numbers" queries
+  const evenMatch = query.match(/which of the following numbers are even: ([\d,\s]+)/i);
+  if (evenMatch) {
+    const numbers = evenMatch[1].split(',').map(n => parseInt(n.trim()));
+    const evens = numbers.filter(num => num % 2 === 0);
+    return evens.join(', ');
+  }
+
+  // Handle "odd numbers" queries
+  const oddMatch = query.match(/which of the following numbers are odd: ([\d,\s]+)/i);
+  if (oddMatch) {
+    const numbers = oddMatch[1].split(',').map(n => parseInt(n.trim()));
+    const odds = numbers.filter(num => num % 2 !== 0);
+    return odds.join(', ');
   }
 
   return "";
